@@ -1,0 +1,206 @@
+/** Member (회원) **/
+create table member (
+	member_id bigint not null auto_increment primary key comment '회원 ID',
+	email varchar(50) not null comment '회원 계정 이메일',
+	nick_name varchar(20) not null comment '회원 닉네임',
+	password varchar(70) not null comment '계정 비밀번호',
+	account_type char(10) not null comment '계정 타입 (카카오, 네이버, 이메일 가입 회원)',
+	address varchar(150) not null comment '회원 주소',
+	birth_number char(6) not null comment '회원 주민번호',
+	postal_code char(6) not null comment '우편 번호',
+	phone char(15) not null comment '전화번호',
+	live char(1) not null comment '계정 유지 여부',
+	profileImage varchar(70) not null comment '계정 프로필 이미지 호출 경로',
+	introduceSelf text comment '계정 간단 소개 내용',
+	preferCategory varchar(30) not null comment '회원이 선호하는 미팅 카테고리 ID 리스트 텍스트',
+	created_at timestamp default now() comment '계정 생성 일자',
+	modified_at timestamp default null comment '계정 수정 일자',
+	key idx_member_email (email),
+    key idx_member_address (address),
+   	key idx_member_account_type (account_type)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='회원 계정';
+
+
+/** Token (JWT) **/
+create table token(
+	token_id bigint not null auto_increment primary key comment '토큰 ID',
+	refresh_token varchar(90) not null comment '리프레시 토큰',
+	grant_type char(6) not null comment '토큰 권한 타입',
+	member_id bigint not null comment '토큰 발급 회원 계정 ID',
+	created_at timestamp default now() comment '토큰 생성 일자',
+	modified_at timestamp default null comment '토큰 수정 일자',
+	key idx_token_member_id (member_id)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='JWT';
+
+
+/** Category (모임 카테고리) **/
+create table category (
+	category_id bigint not null auto_increment primary key comment '카테고리 ID',
+	category_name varchar(15) not null comment '카테고리 명',
+	classification_code varchar(30) not null comment '카테고리 구분 코드',
+	created_at timestamp default now() comment '카테고리 생성 일자',
+	modified_at timestamp default null comment '카테고리 수정 일자',
+	key idx_category_name (category_name),
+	key idx_category_classification_code (classification_code)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='모임 카테고리';
+
+
+/** Faq (FAQ) **/
+create table faq (
+	faq_id bigint not null auto_increment primary key comment 'FAQ ID',
+	question varchar(50) not null comment 'FAQ 질문 (타이틀)',
+	answer text not null comment 'FAQ 내용',
+	type char(10) not null comment 'FAQ 유형',
+	existMediaCheck char(1) default 'N' comment 'FAQ 관련 미디어 파일 존재 유무',
+	created_at timestamp default now() comment 'FAQ 생성 일자',
+	modified_at timestamp default null comment 'FAQ 수정 일자',
+	key idx_faq_type (type)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='FAQ';
+
+
+/** Banner (배너) **/
+create table banner(
+	banner_id bigint not null auto_increment primary key comment '배너 ID',
+	banner_title varchar(40) not null comment '배너 타이틀',
+	banner_type char(10) not null comment '배너 유형',
+	link_url varchar(100) default null comment '배너 클릭 시 이동 url',
+	expression_order int default 0 comment '배너 게시 순서',
+	expression_check char(1) default 'Y' comment '배너 게시 유무',
+	exist_media_check char(1) default 'N' comment '배너 연관 미디어 파일 존재 유무',
+	start_post_date timestamp not null comment '배너 게시 시작 일자',
+	end_post_date timestamp not null comment '배너 게시 종료 일자',
+	created_at timestamp default now() comment '배너 생성 일자',
+	modified_at timestamp default null comment '배너 수정 일자',
+	key idx_banner_title (banner_title),
+	key idx_banner_type (banner_type),
+	key idx_banner_start_post_date (start_post_date),
+	key idx_banner_end_post_date (end_post_date)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='배너';
+
+
+/** Inquiry (문의) **/
+create table inquiry(
+	inquiry_id bigint not null auto_increment primary key comment '문의 ID',
+	inquiry_title varchar(40) not null comment '문의 제목',
+	inquiry_content text not null comment '문의 내용',
+	member_id bigint not null comment '문의자 ID',
+	nick_name varchar(20) not null comment '문의자 닉네임',
+	secret_check char(1) default 'N' comment '문의 비밀 여부',
+	answer_check char(1) default 'N' comment '문의 답변 여부',
+	answer_content text default null comment '문의 답변 내용',
+	answered_at timestamp default null comment '문의 답변 일자',
+	created_at timestamp default now() comment '문의 생성 일자',
+	modified_at timestamp default null comment '문의 수정 일자',
+	foreign key (member_id) references member(member_id),
+	key idx_inquiry_title (inquiry_title),
+	key idx_inquiry_member_id (member_id)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='문의';
+
+
+/** Notice (공지사항) **/
+create table notice(
+	notice_id bigint not null auto_increment primary key comment '공지사항 ID',
+	notice_title varchar(40) not null comment '공지사항 제목',
+	notice_content text not null comment '공지사항 내용',
+	expression_check char(1) default 'Y' comment '공지사항 게시 유무',
+	exist_media_check char(1) default 'N' comment '공지사항 관련 미디어 파일 존재 유무',
+	created_at timestamp default now() comment '공지사항 생성 일자',
+	modified_at timestamp default null comment '공지사항 수정 일자',
+	key idx_notice_title (notice_title)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='공지사항';
+
+
+/** Meeting (모임) **/
+create table meeting(
+	meeting_id bigint not null auto_increment primary key comment '모임 ID',
+	manager varchar(20) not null comment '모임 관리자',
+	manager_id bigint not null comment '모임 관리자 회원 ID',
+	category varchar(15) not null comment '모임 유형 카테고리',
+	category_id bigint not null comment '모임 유형 ID',
+	meeting_name varchar(30) not null comment '모임 명',
+	member_limit_count int default 0 comment '모임 참가 제한 인원 수',
+	description text not null comment '모임 소개 설명',
+	address varchar(60) not null comment '모임 장소',
+	region varchar(20) not null comment '모임 지역 (예 : 서울시 강서구)',
+	participant_status varchar(10) not null comment '모임 참가 상태 (예 : 모집 중, 모집 완료)',
+	start_acceptance_period_date timestamp not null comment '참가 모집 기간 (시작)',
+	end_acceptance_period_date timestamp not null comment '참가 모집 기간 (마무리)',
+	status varchar(10) not null comment '모임 상태 (예 : 진행, 완료)',
+	created_at timestamp default now() comment '모임 생성 일자',
+	modified_at timestamp default null comment '모임 정보 수정 일자',
+	foreign key (manager_id) references member(member_id),
+	foreign key (category_id) references category(category_id),
+	key idx_meeting_name (meeting_name),
+	key idx_meeting_category_id (category_id),
+	key idx_meeting_manager_id (manager_id),
+	key idx_meeting_region (region)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='모임';
+
+
+/** 모임 참가 정보 **/
+create table participant_of_meeting (
+	participant_id bigint not null auto_increment primary key comment '모임 참가 정보 ID',
+	member_id bigint not null comment '모임 참가 회원 ID',
+	nick_name varchar(20) not null comment '모임 참가 회원 닉네임',
+	meeting_id bigint not null comment '참가 모임 ID',
+	meeting_name varchar(30) not null comment '참가 모임 명',
+	created_at timestamp default now() comment '모임 참가 정보 생성 일자',
+	modified_at timestamp default null comment '모임 참가 정보 수정 일자',
+	foreign key (member_id) references member(member_id),
+	foreign key (meeting_id) references meeting(meeting_id),
+	key idx_pom_member_id (member_id),
+	key idx_pom_meeting_id (meeting_id),
+	key idx_pom_meeting_name (meeting_name) 
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='모임 참가 정보';
+
+
+/** Review (리뷰) **/
+create table review(
+	review_id bigint not null auto_increment primary key comment '리뷰 ID',
+	member_id bigint not null comment '리뷰 작성 회원 ID',
+	reviewer varchar(20) not null comment '리뷰 작성 회원 닉네임',
+	meeting_id bigint not null comment '리뷰 작성한 모임 ID',
+	meeting_name varchar(30) not null comment '리뷰 작성한 모임 명',
+	review_content text not null comment '작성한 리뷰 내용',
+	star_rate int not null comment '리뷰 별점',
+	created_at timestamp default now() comment '리뷰 생성 일자',
+	modified_at timestamp default null comment '리뷰 수정 일자',
+	foreign key (member_id) references member(member_id),
+	foreign key (meeting_id) references meeting(meeting_id),
+	key idx_review_member_id (member_id),
+	key idx_review_meeting_id (meeting_id),
+	key idx_review_meeting_name (meeting_name),
+	key idx_review_star_rate (star_rate)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='리뷰';
+
+
+/** Media (미디어) **/
+create table media (
+	media_id bigint not null auto_increment primary key comment '미디어 ID',
+	media_title varchar(50) not null comment '미디어 파일 원본 명',
+	media_uuid_title varchar(80) not null comment '미디어 파일 난수화 명',
+	media_upload_url varchar(150) not null comment '미디어 파일 업로드 경로',
+	media_url varchar(100) not null comment '미디어 파일 호출 경로',
+	content_type varchar(20) not null comment '미디어 파일 관련 컨텐츠 타입 (예 : 배너, 제품)',
+	type varchar(10) not null comment '미디어 파일 타입 (예 : 비디오, 이미지)',
+	mapping_content_id bigint not null comment '미디어 파일 관련 컨텐츠 ID (예 : 제품 ID)',
+	represent_check char(1) default 'N' comment '대표 이미지 확인 여부',
+	created_at timestamp default now() comment '미디어 파일 생성 일자',
+	modified_at timestamp default null comment '미디어 파일 정보 수정 일자',
+	key idx_media_content_type (content_type),
+	key idx_media_mapping_content_id (mapping_content_id)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='미디어 파일 정보';
+
+
+/** Like (좋아요) **/
+create table like_meeting(
+	like_id bigint not null auto_increment primary key comment '좋아요 ID',
+	member_id bigint not null comment '좋아요를 남긴 회원 ID',
+	meeting_id bigint not null comment '좋아요를 남긴 모임 ID',
+	created_at timestamp default now() comment '좋아요를 남긴 일자',
+	modified_at timestamp default null comment '좋아요 수정 일자',
+	foreign key (member_id) references member(member_id),
+	foreign key (meeting_id) references meeting(meeting_id),
+	key idx_like_member_id (member_id),
+	key idx_like_meeting_id (meeting_id)
+) engine=innodb default charset=utf8mb4 collate=utf8mb4_general_ci comment='좋아요';
