@@ -1,5 +1,7 @@
 package sh.user.supportershighuserbackend.common.base;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MultipartFile;
 import sh.user.supportershighuserbackend.common.exception.MemberException;
+import sh.user.supportershighuserbackend.member.repository.MemberRepository;
 import sh.user.supportershighuserbackend.member.request.MemberRegistRequestDto;
 
 import java.util.HashMap;

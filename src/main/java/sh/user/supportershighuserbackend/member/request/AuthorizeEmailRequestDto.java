@@ -2,16 +2,11 @@ package sh.user.supportershighuserbackend.member.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import sh.user.supportershighuserbackend.common.base.AbstractVO;
 
 @Getter
-public class MemberLoginRequestDto extends AbstractVO {
+public class AuthorizeEmailRequestDto {
     @NotBlank
     @Email(message = "이메일 정보가 옳바르지 않습니다.")
     private String email;
-    @NotBlank
-    @Size(min = 4, message = "비밀번호는 최소 4자 이상이여야 합니다.")
-    private String password;
 }

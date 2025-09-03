@@ -1,4 +1,4 @@
-package sh.user.supportershighuserbackend.jwt;
+package sh.user.supportershighuserbackend.jwt.service;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
-
 
 import java.io.IOException;
 

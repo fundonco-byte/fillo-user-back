@@ -6,9 +6,10 @@ import lombok.Getter;
 @Builder
 @Getter
 public class MemberLoginResponseDto implements AutoCloseable{
-    private String loginId;
-    private String type;
-    private String userName;
+    private String email;
+    private String name;
+    private String accessToken;
+    private String refreshToken;
 
     @Override
     public void close() throws Exception {

@@ -1,11 +1,11 @@
-package sh.user.supportershighuserbackend.jwt;
+package sh.user.supportershighuserbackend.jwt.service;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.Resource;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import sh.user.supportershighuserbackend.common.util.LogUtil;
+import sh.user.supportershighuserbackend.jwt.response.JwtTokenDto;
 import sh.user.supportershighuserbackend.member.domain.Member;
 import sh.user.supportershighuserbackend.member.repository.MemberRepository;
 
@@ -30,17 +31,18 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
 
-    private final Key key;
+    private Key key;
 
 //    @Resource(name = "tokenMapper")
 //    private TokenMapper tokenMapper;
 
     private MemberRepository memberRepository;
 
-
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.memberRepository = memberRepository;
     }
 
     // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
@@ -54,19 +56,22 @@ public class JwtTokenProvider {
 
         log.info("권한 정보 확인 : {}" , authorities);
 
-        // Access Token 생성
+        // Access Token 만료일자 생성
         Date accessTokenExpiresIn = new Date(now + 86400000);
+        // Refresh Token 만료일자 생성
+        Date refreshTokenExpiresIn = new Date(now + 604800000);
 
+        // Access Token 생성
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", accountType)
-                .setExpiration(accessTokenExpiresIn)
+                .setExpiration(accessTokenExpiresIn) // Access Token은 만료일자를 1일
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + 86400000))
+                .setExpiration(refreshTokenExpiresIn) // Refresh Token은 만료일자를 7일
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
@@ -75,6 +80,7 @@ public class JwtTokenProvider {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .accessTokenExpiresIn(accessTokenExpiresIn)
+                .refreshTokenExpiresIn(refreshTokenExpiresIn)
                 .build();
     }
 

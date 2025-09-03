@@ -1,17 +1,16 @@
 package sh.user.supportershighuserbackend.member.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Collate;
 import org.hibernate.annotations.Comment;
+import sh.user.supportershighuserbackend.member.request.MemberUpdateInfoRequestDto;
 import sh.user.supportershighuserbackend.share.TimeStamped;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Setter
 @Getter
 @org.springframework.data.relational.core.mapping.Table
 @Comment("회원")
@@ -124,4 +123,20 @@ public class Member extends TimeStamped {
     @Collate("utf8mb4_general_ci")
     @Column(columnDefinition = "char(1) not null")
     private String marketingAgreement;
+
+    // 회원 정보 수정
+    public void changeMemberInfo(MemberUpdateInfoRequestDto updateInfo, String password) {
+        this.nickName = updateInfo.getNickName();
+        this.password = password;
+        this.address = updateInfo.getAddress();
+        this.birthDate = updateInfo.getBirthDate();
+        this.postalCode = updateInfo.getPostalCode();
+        this.phone = updateInfo.getPhone();
+        this.leagueId = updateInfo.getLeagueId();
+        this.leagueName = updateInfo.getLeagueName();
+        this.teamId = updateInfo.getTeamId();
+        this.teamName = updateInfo.getTeamName();
+        this.personalInfoAgreement = updateInfo.getPersonalInfoAgreement();
+        this.marketingAgreement = updateInfo.getMarketingAgreement();
+    }
 }

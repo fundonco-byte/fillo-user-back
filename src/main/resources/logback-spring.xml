@@ -44,20 +44,22 @@
 		<append>true</append>
 		<encoder>
 			<pattern>${MSG_PTRN}</pattern>
-		</encoder> 
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<!-- .gz,.zip 등을 넣으면 자동 일자별 로그파일 압축 -->
 			<fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}/${LOG_FILE_NAME}-${SVR_NAME}-%d{yyyyMMdd}_%02i.log.${COMPRESS_TYPE}</fileNamePattern>
 			<!-- 일자별 로그파일 최대 보관주기(일단위) 만약 해당 설정일 이상된 파일은 자동으로 제거 -->
 			<maxHistory>30</maxHistory>
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP"> 
-				<!-- 파일당 최고 용량 kb, mb, gb --> 
+			<!-- 파일당 최고 용량 kb, mb, gb -->
+			<maxFileSize>30MB</maxFileSize>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- 파일당 최고 용량 kb, mb, gb -->
 				<maxFileSize>30MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
 			<!--
 			<MinIndex>1</MinIndex>
-			<MaxIndex>10</MaxIndex>--> 
-		</rollingPolicy> 
+			<MaxIndex>10</MaxIndex>-->
+		</rollingPolicy>
 	</appender>
 
 	<!-- errorLog Appender -->
@@ -67,11 +69,13 @@
 		<encoder>
 			<pattern>${ERR_PTRN}</pattern>
 		</encoder>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<!-- .gz,.zip 등을 넣으면 자동 일자별 로그파일 압축 -->
 			<fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}/${LOG_FILE_NAME}-${SVR_NAME}-error-%d{yyyyMMdd}_%02i.log.${COMPRESS_TYPE}</fileNamePattern>
 			<!-- 일자별 로그파일 최대 보관주기(일단위) 만약 해당 설정일 이상된 파일은 자동으로 제거 -->
 			<maxHistory>30</maxHistory>
+			<!-- 파일당 최고 용량 kb, mb, gb -->
+			<maxFileSize>30MB</maxFileSize>
 			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
 				<!-- 파일당 최고 용량 kb, mb, gb -->
 				<maxFileSize>30MB</maxFileSize>
@@ -80,22 +84,24 @@
 	</appender>
 
 	<!-- BatchLog File Appender -->
-	<appender name="batchLog" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+	<appender name="batchLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_PATH}/${LOG_FILE_NAME}-${SVR_NAME}-bat.log</file>
 		<append>true</append>
 		<encoder>
 			<pattern>${MSG_PTRN}</pattern>
-		</encoder> 
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 			<!-- .gz,.zip 등을 넣으면 자동 일자별 로그파일 압축 -->
 			<fileNamePattern>${LOG_PATH}/%d{yyyyMMdd}/${LOG_FILE_NAME}-${SVR_NAME}-batch-%d{yyyyMMdd}_%02i.log.${COMPRESS_TYPE}</fileNamePattern>
 			<!-- 일자별 로그파일 최대 보관주기(일단위) 만약 해당 설정일 이상된 파일은 자동으로 제거 -->
 			<maxHistory>30</maxHistory>
+			<!-- 파일당 최고 용량 kb, mb, gb -->
+			<maxFileSize>30MB</maxFileSize>
 			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
 				<!-- 파일당 최고 용량 kb, mb, gb -->
 				<maxFileSize>30MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
-		</rollingPolicy> 
+		</rollingPolicy>
 	</appender>
 
 	<!--  배치작업 로그 -->

@@ -2,6 +2,7 @@ package sh.user.supportershighuserbackend.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
+import sh.user.supportershighuserbackend.member.repository.MemberRepository;
 import sh.user.supportershighuserbackend.member.request.MemberRegistRequestDto;
 
 public interface MemberException {

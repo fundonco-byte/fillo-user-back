@@ -1,4 +1,4 @@
-package sh.user.supportershighuserbackend.jwt;
+package sh.user.supportershighuserbackend.jwt.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

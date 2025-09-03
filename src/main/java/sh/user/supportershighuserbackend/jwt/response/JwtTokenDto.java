@@ -1,4 +1,4 @@
-package sh.user.supportershighuserbackend.jwt;
+package sh.user.supportershighuserbackend.jwt.response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -12,4 +12,5 @@ public class JwtTokenDto {
     private String accessToken;
     private String refreshToken;
     private Date accessTokenExpiresIn;
+    private Date refreshTokenExpiresIn;
 }

@@ -5,10 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,8 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
-import sh.user.supportershighuserbackend.jwt.JwtAuthenticationFilter;
-import sh.user.supportershighuserbackend.jwt.JwtTokenProvider;
+import sh.user.supportershighuserbackend.jwt.service.JwtAuthenticationFilter;
+import sh.user.supportershighuserbackend.jwt.service.JwtTokenProvider;
 
 @Slf4j
 @Configuration
@@ -41,7 +39,6 @@ public class SecurityConfig {
 
         // (1) SessionCreationPolicy : 세션 생성 정책 - 무상태성 적용
         // (2) RequestMarchers : 모든 접근 허용 api 엔드포인트 설정 + CORS
-        // (3)
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -51,7 +48,10 @@ public class SecurityConfig {
                                 "/api/v1/team/all",
                                 "/api/v1/member/regist",
                                 "/api/v1/member/login",
+                                "/api/v1/member/logout",
+                                "/api/v1/member/pre-registration",
                                 "/api/v1/league/all",
+                                "/api/v1/member/email/authorize",
                                 "/actuator/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",

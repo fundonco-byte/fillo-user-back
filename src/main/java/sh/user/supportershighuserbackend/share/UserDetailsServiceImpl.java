@@ -1,74 +1,45 @@
-//package sh.user.supportershighuserbackend.share;
-//
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.security.core.userdetails.User;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
-//import org.springframework.stereotype.Service;
-//
-//@Slf4j
-//@Service
-//@RequiredArgsConstructor
-//public class UserDetailsServiceImpl implements UserDetailsService {
-//
-//    private final AdminExecptionInterface adminExecptionInterface;
-//    private final MemberExceptionInterface memberExceptionInterface;
-//    private final AdminQueryData adminQueryData;
-//    private final MemberQueryData memberQueryData;
-//    private final SupplierQueryData supplierQueryData;
-//
-//    @Override
-//    public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
-//        String[] loginAccount = loginId.split("-");
-//
-//        if(loginAccount[0].equals("A") || loginAccount[0].equals("S")){
-//            String checkAdminAccount = adminExecptionInterface.checkExistAdminLoginId(loginId);
-//
-//            log.info("어드민 로그인 : {}", checkAdminAccount);
-//
-//            if(checkAdminAccount != null){
-//                log.info("어드민 계정 존재 : {}", checkAdminAccount);
-//
-//                return createUserDetailsOfAdmin(adminQueryData.getAdminAccount(loginAccount[0], loginAccount[1]));
-//            }
-//        }else{
-//            String checkMemberAccount = memberExceptionInterface.checkExistMemberLoginId(loginId);
-//
-//            log.info("유저 로그인 : {}", checkMemberAccount);
-//
-//            if (checkMemberAccount.equals("client")) {
-//                log.info("유저 계정 존재 (고객) : {}", checkMemberAccount);
-//                return createUserDetailsOfMember(memberQueryData.getLoginAccount(loginId));
-//            } else if (checkMemberAccount.equals("business")) {
-//                log.info("유저 계정 존재 (기업) : {}", checkMemberAccount);
-//                return createUserDetailsOfMember(memberQueryData.getLoginAccount(loginId));
-//            }
-//        }
-//
-//        return null;
-//    }
-//
-//    private UserDetails createUserDetailsOfAdmin(AdminAccount adminAccount) {
-//        log.info("관리자용 createUserDetails 실행");
-//
-//        return User.builder()
-//                .username(adminAccount.getLoginId())
-//                .password(adminAccount.getType().equals("supplier") ? supplierQueryData.getSupplier(adminAccount.getLoginId()).getBcryptPassword() : adminAccount.getPassword())
-//                .roles(adminAccount.getRoles().toArray(new String[0]))
-//                .build();
-//    }
-//
-//
-//    private UserDetails createUserDetailsOfMember(Member member) {
-//        log.info("회원용 createUserDetails 실행");
-//
-//        return User.builder()
-//                .username(member.getLoginId())
-//                .password(member.getPassword())
-//                .roles(member.getRoles().toArray(new String[0]))
-//                .build();
-//    }
-//
-//}
+package sh.user.supportershighuserbackend.share;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import sh.user.supportershighuserbackend.member.domain.Member;
+import sh.user.supportershighuserbackend.member.repository.MemberRepository;
+
+import java.util.Optional;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class UserDetailsServiceImpl implements UserDetailsService {
+
+    private final MemberRepository memberRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<Member> loadUser = memberRepository.getMemberByEmail(email);
+
+        if (loadUser.isPresent()) {
+            log.info("유저 계정 존재 (고객) : {}", loadUser.get().getEmail());
+            return createUserDetailsOfMember(loadUser.get());
+        }else{
+            log.info("유저 인증 계정 없음");
+            return null;
+        }
+    }
+
+    private UserDetails createUserDetailsOfMember(Member member) {
+        log.info("회원용 createUserDetails 실행");
+
+        return User.builder()
+                .username(member.getEmail())
+                .password(member.getPassword())
+                .roles("client")
+                .build();
+    }
+
+}

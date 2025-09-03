@@ -10,7 +10,7 @@ public class SupportershighUserBackendApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SupportershighUserBackendApplication.class, args);
-        System.out.println("======================= [Application ACtive] =======================");
+        System.out.println("======================= [Application Active] =======================");
     }
 
 }
