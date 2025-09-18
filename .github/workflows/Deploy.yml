@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CI/CD
+        uses: appleboy/ssh-action@v1
+        env:
+          APPLICATION_PROD_PROPERTIES: ${{ secrets.APPLICATION_PROD_PROPERTIES }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER_NAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          envs: APPLICATION_PROD_PROPERTIES
+          script_stop: true
+          script: |
+            cd /home/fillo/back/fillo-user-back
+            echo "Fillo 유저 백엔드 프로젝트 경로 진입"
+            rm -rf src/main/resources/application-prod.properties
+            echo "gitignore 처리된 이전 properties, yml 파일 삭제"
+            git checkout prod
+            echo "prod 운영 브랜치 전환"
+            git pull origin dev
+            echo "dev 브랜치 pull"
+            git push origin prod
+            echo "prod 브랜치에 dev 내용 업데이트"
+            echo "$APPLICATION_PROD_PROPERTIES" > src/main/resources/application-prod.properties
+            echo "properties, yml 설정 파일 생성"
+            ./gradlew clean build
+            echo "jar 빌드"
+            sudo fuser -k -n tcp 8093 || true
+            echo "기존 8093 포트 실행 중이던 java 프로세스 확인 후 제거"
+            nohup java -jar -server -Xmx5g -XX:+UseG1GC -Djava.awt.headless=true -Dspring.profiles.active=prod -Dsvr.nm=fillo-user-prod -Dfile.encoding=UTF-8 build/libs/*SNAPSHOT.jar 1> /dev/null 2>&1 &
+            echo "jar 배포"

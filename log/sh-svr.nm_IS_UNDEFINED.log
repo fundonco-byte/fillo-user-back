@@ -5908,3 +5908,9 @@ io.jsonwebtoken.ExpiredJwtException: JWT expired at 2025-09-18T08:10:53Z. Curren
 17:46:15.425 INFO  [http-nio-8093-exec-1] [JwtTokenProvider.java-getMemberFromAuthentication-119] authentication 계정 이메일 아이디 - wlstpgns51@naver.com
 17:46:15.479 INFO  [http-nio-8093-exec-1] [TimeMonitorAspect.java-logTime-32] ResponseEntity sh.user.supportershighuserbackend.member.controller.MemberController.updateMemberPassword(HttpServletRequest,UpdatePasswordRequestDto) 실행 시간 : 55 ms
 17:46:15.480 INFO  [http-nio-8093-exec-1] [MethodCallMonitorAspect.java-methodCallLog-32] updateMemberPassword 함수 정상 반환 데이터 : public class org.springframework.http.ResponseEntity<T>
+18:12:37.023 INFO  [SpringApplicationShutdownHook] [CloseEventListener.java-onApplicationEvent-15] CloseEventListener!!
+18:12:37.025 INFO  [SpringApplicationShutdownHook] [GracefulShutdown.java-shutDownGracefully-54] Commencing graceful shutdown. Waiting for active requests to complete
+18:12:37.031 INFO  [tomcat-shutdown] [GracefulShutdown.java-doShutdown-76] Graceful shutdown complete
+18:12:37.050 INFO  [SpringApplicationShutdownHook] [AbstractEntityManagerFactoryBean.java-destroy-660] Closing JPA EntityManagerFactory for persistence unit 'default'
+18:12:37.053 INFO  [SpringApplicationShutdownHook] [HikariDataSource.java-close-349] HikariPool-1 - Shutdown initiated...
+18:12:37.055 INFO  [SpringApplicationShutdownHook] [HikariDataSource.java-close-351] HikariPool-1 - Shutdown completed.
