@@ -40,7 +40,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // Postgresql
-    implementation("org.postgresql:postgresql:42.7.7")
+//    implementation("org.postgresql:postgresql:42.7.7")
 
     // Commons-lang3
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
