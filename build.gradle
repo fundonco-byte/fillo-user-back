@@ -64,7 +64,6 @@ dependencies {
     // spring boot email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     // javax mail
-//    implementation group: 'javax.mail', name: 'mail', version: '1.4.7'
 }
 
 tasks.named('test') {
