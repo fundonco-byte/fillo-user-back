@@ -9,13 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import sh.user.supportershighuserbackend.aop.MethodCallMonitor;
 import sh.user.supportershighuserbackend.aop.TimeMonitor;
 import sh.user.supportershighuserbackend.common.util.LogUtil;
-import sh.user.supportershighuserbackend.member.request.AuthorizeEmailRequestDto;
-import sh.user.supportershighuserbackend.member.request.MemberLoginRequestDto;
-import sh.user.supportershighuserbackend.member.request.MemberRegistRequestDto;
-import sh.user.supportershighuserbackend.member.request.MemberUpdateInfoRequestDto;
+import sh.user.supportershighuserbackend.member.request.*;
 import sh.user.supportershighuserbackend.member.service.MemberService;
 import sh.user.supportershighuserbackend.share.ResponseBody;
 
@@ -120,14 +118,15 @@ public class MemberController {
     // 로그인한 유저의 자신의 정보 수정
     @MethodCallMonitor
     @TimeMonitor
-    @PutMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.ALL_VALUE})
+    @PutMapping(value = "/update", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ResponseBody> updateAccountInfo(
             HttpServletRequest request,
-            @Valid @RequestBody MemberUpdateInfoRequestDto memberUpdateInfoRequestDto){
+            @RequestPart(required = false, name = "profileImage") MultipartFile profileImage,
+            @Valid @RequestPart(name = "updateInfo") MemberUpdateInfoRequestDto memberUpdateInfoRequestDto){
         log.info("[Member] 로그인한 유저의 자신의 정보 수정");
 
         try{
-            return new ResponseEntity<>(memberService.updateAccountInfo(request, memberUpdateInfoRequestDto), HttpStatus.OK);
+            return new ResponseEntity<>(memberService.updateAccountInfo(request, memberUpdateInfoRequestDto, profileImage), HttpStatus.OK);
         }catch(Exception e){
             LogUtil.logException(e, request, memberUpdateInfoRequestDto);
             return null;
@@ -146,6 +145,24 @@ public class MemberController {
             return new ResponseEntity<>(memberService.getPreRegistrationCount(), HttpStatus.OK);
         }catch(Exception e){
             LogUtil.logException(e);
+            return null;
+        }
+    }
+
+
+    // 비밀번호 수정
+    @MethodCallMonitor
+    @TimeMonitor
+    @PutMapping(value = "/update/password", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.ALL_VALUE})
+    public ResponseEntity<ResponseBody> updateMemberPassword(
+            HttpServletRequest request,
+            @Valid @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto){
+        log.info("[Member] 비밀번호 수정");
+
+        try{
+            return new ResponseEntity<>(memberService.updateMemberPassword(request, updatePasswordRequestDto), HttpStatus.OK);
+        }catch(Exception e){
+            LogUtil.logException(e, request, updatePasswordRequestDto);
             return null;
         }
     }

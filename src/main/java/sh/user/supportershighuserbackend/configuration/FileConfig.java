@@ -16,9 +16,14 @@ public class FileConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler( "/image/**")
                 .addResourceLocations(
-                        "E:/Development/BackEnd/supportershigh-user-backend/media/",
-                        "E:/Development/BackEnd/supportershigh-user-backend/media/member/",
-                        "file:///www/fundon/web/file/");
+                        "E:/Development/BackEnd/fillo-user-backend/media/",
+                        "E:/Development/BackEnd/fillo-user-backend/media/member/",
+                        "D:/Development/BackEnd/fillo-user-backend/media/",
+                        "D:/Development/BackEnd/fillo-user-backend/media/member/",
+                        "file:///E:/Development/BackEnd/fillo-user-backend/media/",
+                        "file:///E:/Development/BackEnd/fillo-user-backend/media/member/",
+                        "file:///D:/Development/BackEnd/fillo-user-backend/media/",
+                        "file:///D:/Development/BackEnd/fillo-user-backend/media/member/");
 
         // 이후 배포 서버를 변경하게 될 때 그에 맞춰서 실제 이미지가 업로드될 경로를 지정하는 addResourceLocations 를 다시 지정해주어야 하고,
         // 마찬가지로 실제 배포 서버에서도 업로드 경로에 맞게끔 폴더 경로들을 생성해주어야 한다.

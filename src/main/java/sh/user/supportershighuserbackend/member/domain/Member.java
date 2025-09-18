@@ -125,12 +125,12 @@ public class Member extends TimeStamped {
     private String marketingAgreement;
 
     // 회원 정보 수정
-    public void changeMemberInfo(MemberUpdateInfoRequestDto updateInfo, String password) {
+    public void changeMemberInfo(MemberUpdateInfoRequestDto updateInfo, String profileImageUrl) {
         this.nickName = updateInfo.getNickName();
-        this.password = password;
+//        this.password = password;
         this.address = updateInfo.getAddress();
         this.birthDate = updateInfo.getBirthDate();
-        this.postalCode = updateInfo.getPostalCode();
+//        this.postalCode = updateInfo.getPostalCode();
         this.phone = updateInfo.getPhone();
         this.leagueId = updateInfo.getLeagueId();
         this.leagueName = updateInfo.getLeagueName();
@@ -138,5 +138,11 @@ public class Member extends TimeStamped {
         this.teamName = updateInfo.getTeamName();
         this.personalInfoAgreement = updateInfo.getPersonalInfoAgreement();
         this.marketingAgreement = updateInfo.getMarketingAgreement();
+        this.profileImage = profileImageUrl;
+    }
+
+    // 회원 비밀번호 수정
+    public void changeMemberPassword(String password){
+        this.password = password;
     }
 }

@@ -12,14 +12,16 @@ public class MemberRegistRequestDto extends AbstractVO {
     @NotBlank
     @Email(message = "이메일 정보가 옳바르지 않습니다.")
     private String email; // 로그인 아이디
+    @NotBlank
+    private String emailVerificationCode; // 이메일 인증값
     //    @NotBlank
 //    @Size(min=2, message="닉네임은 최소 2자 이상이여야 합니다.")
 //    private String nickName; // 닉네임
     @NotBlank
-    @Size(min = 4, message = "비밀번호는 최소 4자 이상이여야 합니다.")
+    @Size(min = 8, message = "비밀번호는 최소 8자 이상이여야 합니다.")
     private String password; // 비밀번호
     @NotBlank
-    @Size(min = 4, message = "비밀번호는 최소 4자 이상이여야 합니다.")
+    @Size(min = 8, message = "비밀번호는 최소 8자 이상이여야 합니다.")
     private String checkPassword; // 재확인용 비밀번호
     //    private String accountType; // 계정 유형 (예 : 카카오, 일반, 구글..)
 //    @NotBlank

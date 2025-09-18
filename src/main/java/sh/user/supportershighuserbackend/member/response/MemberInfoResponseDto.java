@@ -24,4 +24,5 @@ public class MemberInfoResponseDto{
     private String teamName; // 선호 팀 명
     private String personalInfoAgreement; // 개인정보 이용 동의
     private String marketingAgreement; // 마케팅 동의
+    private String joinDate; // 가입일
 }

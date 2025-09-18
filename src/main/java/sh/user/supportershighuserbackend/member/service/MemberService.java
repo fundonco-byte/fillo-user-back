@@ -13,6 +13,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sh.user.supportershighuserbackend.common.base.AbstractExceptionHandler;
 import sh.user.supportershighuserbackend.common.util.LogUtil;
 import sh.user.supportershighuserbackend.jwt.domain.JwtToken;
@@ -28,6 +29,7 @@ import sh.user.supportershighuserbackend.member.repository.MemberRepository;
 import sh.user.supportershighuserbackend.member.request.MemberLoginRequestDto;
 import sh.user.supportershighuserbackend.member.request.MemberRegistRequestDto;
 import sh.user.supportershighuserbackend.member.request.MemberUpdateInfoRequestDto;
+import sh.user.supportershighuserbackend.member.request.UpdatePasswordRequestDto;
 import sh.user.supportershighuserbackend.member.response.MemberInfoResponseDto;
 import sh.user.supportershighuserbackend.member.response.MemberLoginResponseDto;
 import sh.user.supportershighuserbackend.member.response.MemberRegistResponseDto;
@@ -38,6 +40,7 @@ import sh.user.supportershighuserbackend.team.repository.TeamRepository;
 
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -96,53 +99,98 @@ public class MemberService extends AbstractExceptionHandler {
                 LogUtil.logError(StatusCode.CANT_REGIST_USER_ACCOUNT.getMessage(), memberRegistRequestDto, checkData);
                 return new ResponseBody(StatusCode.CANT_REGIST_USER_ACCOUNT, "이미 존재한 이메일 계정입니다.");
             }
+            
+            if(memberRegistRequestDto.getLeagueId() != 0){
+                // 선호하는 리그 정보 호출
+                League selectLeague = leagueRepository.getLeagueByLeagueId(memberRegistRequestDto.getLeagueId());
+                // 선호하는 팀 정보 호출
+                Team selectTeam = teamRepository.getTeamByTeamId(memberRegistRequestDto.getTeamId());
 
-            // 선호하는 리그 정보 호출
-            League selectLeague = leagueRepository.getLeagueByLeagueId(memberRegistRequestDto.getLeagueId());
-            // 선호하는 팀 정보 호출
-            Team selectTeam = teamRepository.getTeamByTeamId(memberRegistRequestDto.getTeamId());
+                // 회원가입 정보 저장
+                Member member = Member.builder()
+                        .email(memberRegistRequestDto.getEmail())
+                        .name(memberRegistRequestDto.getName())
+                        .password(passwordEncoder.encode(memberRegistRequestDto.getPassword()))
+                        .accountType("default")
+                        .gender(memberRegistRequestDto.getGender())
+                        .birthDate(memberRegistRequestDto.getBirthDate())
+                        .leagueId(selectLeague.getLeagueId())
+                        .leagueName(selectLeague.getName())
+                        .teamId(selectTeam.getTeamId())
+                        .teamName(selectTeam.getName())
+                        .live("y")
+                        .personalInfoAgreement(memberRegistRequestDto.getPersonalInfoAgreement())
+                        .marketingAgreement(memberRegistRequestDto.getMarketingAgreement())
+                        .build();
 
-            // 회원가입 정보 저장
-            Member member = Member.builder()
-                    .email(memberRegistRequestDto.getEmail())
-                    .name(memberRegistRequestDto.getName())
-                    .password(passwordEncoder.encode(memberRegistRequestDto.getPassword()))
-                    .accountType("default")
-                    .gender(memberRegistRequestDto.getGender())
-                    .birthDate(memberRegistRequestDto.getBirthDate())
-                    .leagueId(selectLeague.getLeagueId())
-                    .leagueName(selectLeague.getName())
-                    .teamId(selectTeam.getTeamId())
-                    .teamName(selectTeam.getName())
-                    .live("y")
-                    .personalInfoAgreement(memberRegistRequestDto.getPersonalInfoAgreement())
-                    .marketingAgreement(memberRegistRequestDto.getMarketingAgreement())
-                    .build();
+                Member registMember = memberRepository.save(member);
 
-            Member registMember = memberRepository.save(member);
+                return new ResponseBody(
+                        StatusCode.OK,
+                        MemberRegistResponseDto.builder()
+                                .memberId(registMember.getMemberId())
+                                .email(registMember.getEmail())
+                                .nickName(registMember.getNickName() == null ? "" : registMember.getNickName())
+                                .name(registMember.getName())
+                                .accountType(registMember.getAccountType())
+                                .address(registMember.getAddress() == null ? "" : registMember.getAddress())
+                                .birthDate(registMember.getBirthDate())
+                                .postalCode(registMember.getPostalCode() == null ? "" : registMember.getPostalCode())
+                                .phone(registMember.getPhone() == null ? "" : registMember.getPhone())
+                                .live(registMember.getLive())
+                                .profileImage(registMember.getProfileImage() == null ? "" : registMember.getProfileImage())
+                                .gender(registMember.getGender())
+                                .leagueId(registMember.getLeagueId())
+                                .leagueName(registMember.getLeagueName())
+                                .teamId(registMember.getTeamId())
+                                .teamName(registMember.getTeamName())
+                                .personalInfoAgreement(registMember.getPersonalInfoAgreement())
+                                .marketingAgreement(registMember.getMarketingAgreement())
+                                .build());
+            }else{
+                // 회원가입 정보 저장
+                Member member = Member.builder()
+                        .email(memberRegistRequestDto.getEmail())
+                        .name(memberRegistRequestDto.getName())
+                        .password(passwordEncoder.encode(memberRegistRequestDto.getPassword()))
+                        .accountType("default")
+                        .gender(memberRegistRequestDto.getGender())
+                        .birthDate(memberRegistRequestDto.getBirthDate())
+                        .leagueId(0L)
+                        .leagueName("없음")
+                        .teamId(0L)
+                        .teamName("없음")
+                        .live("y")
+                        .personalInfoAgreement(memberRegistRequestDto.getPersonalInfoAgreement())
+                        .marketingAgreement(memberRegistRequestDto.getMarketingAgreement())
+                        .build();
 
-            return new ResponseBody(
-                    StatusCode.OK,
-                    MemberRegistResponseDto.builder()
-                            .memberId(registMember.getMemberId())
-                            .email(registMember.getEmail())
-                            .nickName(registMember.getNickName() == null ? "" : registMember.getNickName())
-                            .name(registMember.getName())
-                            .accountType(registMember.getAccountType())
-                            .address(registMember.getAddress() == null ? "" : registMember.getAddress())
-                            .birthDate(registMember.getBirthDate())
-                            .postalCode(registMember.getPostalCode() == null ? "" : registMember.getPostalCode())
-                            .phone(registMember.getPhone() == null ? "" : registMember.getPhone())
-                            .live(registMember.getLive())
-                            .profileImage(registMember.getProfileImage() == null ? "" : registMember.getProfileImage())
-                            .gender(registMember.getGender())
-                            .leagueId(registMember.getLeagueId())
-                            .leagueName(registMember.getLeagueName())
-                            .teamId(registMember.getTeamId())
-                            .teamName(registMember.getTeamName())
-                            .personalInfoAgreement(registMember.getPersonalInfoAgreement())
-                            .marketingAgreement(registMember.getMarketingAgreement())
-                            .build());
+                Member registMember = memberRepository.save(member);
+
+                return new ResponseBody(
+                        StatusCode.OK,
+                        MemberRegistResponseDto.builder()
+                                .memberId(registMember.getMemberId())
+                                .email(registMember.getEmail())
+                                .nickName(registMember.getNickName() == null ? "" : registMember.getNickName())
+                                .name(registMember.getName())
+                                .accountType(registMember.getAccountType())
+                                .address(registMember.getAddress() == null ? "" : registMember.getAddress())
+                                .birthDate(registMember.getBirthDate())
+                                .postalCode(registMember.getPostalCode() == null ? "" : registMember.getPostalCode())
+                                .phone(registMember.getPhone() == null ? "" : registMember.getPhone())
+                                .live(registMember.getLive())
+                                .profileImage(registMember.getProfileImage() == null ? "" : registMember.getProfileImage())
+                                .gender(registMember.getGender())
+                                .leagueId(registMember.getLeagueId())
+                                .leagueName(registMember.getLeagueName())
+                                .teamId(registMember.getTeamId())
+                                .teamName(registMember.getTeamName())
+                                .personalInfoAgreement(registMember.getPersonalInfoAgreement())
+                                .marketingAgreement(registMember.getMarketingAgreement())
+                                .build());
+            }
+            
         } catch (Exception e) {
             LogUtil.logException(e, memberRegistRequestDto);
             return null;
@@ -232,7 +280,7 @@ public class MemberService extends AbstractExceptionHandler {
             if (!jwtTokenProvider.validateToken(request.getHeader("Authorization").substring(7)) && !jwtTokenProvider.validateToken(request.getHeader("RefreshToken"))) {
                 log.info("토큰이 만료되었습니다.");
                 LogUtil.logError("토큰이 만료되었습니다.", request.getHeader("Authorization"));
-                return new ResponseBody(StatusCode.EXPIRED_TOKEN, null);
+                return new ResponseBody(StatusCode.TOKEN_ISSUE, null);
             }
 
             // 현재 로그인 중인 인증 계정 조회
@@ -269,11 +317,13 @@ public class MemberService extends AbstractExceptionHandler {
             if (!jwtTokenProvider.validateToken(request.getHeader("Authorization").substring(7)) && !jwtTokenProvider.validateToken(request.getHeader("RefreshToken"))) {
                 log.info("옳바른 토큰 정보가 아니라 정보를 조회할 수 없습니다.");
                 LogUtil.logError("옳바른 토큰 정보가 아니라 정보를 조회할 수 없습니다.", request.getHeader("Authorization"));
-                return new ResponseBody(StatusCode.CANT_GET_MEMBER_INFO, null);
+                return new ResponseBody(StatusCode.TOKEN_ISSUE, null);
             }
 
             // 로그인한 회원 객체 조회
             Member authMember = jwtTokenProvider.getMemberFromAuthentication();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
             return new ResponseBody(
                     StatusCode.OK,
@@ -296,6 +346,7 @@ public class MemberService extends AbstractExceptionHandler {
                             .teamName(authMember.getTeamName())
                             .personalInfoAgreement(authMember.getPersonalInfoAgreement())
                             .marketingAgreement(authMember.getMarketingAgreement())
+                            .joinDate(authMember.getCreatedAt().format(formatter))
                             .build());
         } catch (Exception e) {
             LogUtil.logException(e, request);
@@ -306,28 +357,35 @@ public class MemberService extends AbstractExceptionHandler {
 
     // 로그인한 유저의 자신의 정보 수정 service
     @Transactional
-    public ResponseBody updateAccountInfo(HttpServletRequest request, MemberUpdateInfoRequestDto memberUpdateInfoRequestDto){
+    public ResponseBody updateAccountInfo(HttpServletRequest request, MemberUpdateInfoRequestDto memberUpdateInfoRequestDto, MultipartFile profileImage){
         log.info("로그인한 유저의 자신의 정보 수정 service");
 
         try{
             if (!jwtTokenProvider.validateToken(request.getHeader("Authorization").substring(7)) && !jwtTokenProvider.validateToken(request.getHeader("RefreshToken"))) {
                 log.info("옳바른 토큰 정보가 아니라 정보를 수정할 수 없습니다.");
                 LogUtil.logError("옳바른 토큰 정보가 아니라 정보를 수정할 수 없습니다.", request.getHeader("Authorization"));
-                return new ResponseBody(StatusCode.CANT_GET_MEMBER_INFO, null);
+                return new ResponseBody(StatusCode.TOKEN_ISSUE, null);
             }
 
             // 로그인한 회원 객체 조회
             Member authMember = jwtTokenProvider.getMemberFromAuthentication();
+
+            // 수정할 프로필 이미지 존재 시 수정
+            if(profileImage != null || !profileImage.isEmpty()) {
+                HashMap<String, String> profileImageUploadInfo = mediaUpload.uploadMemberMedia(profileImage);
+                // 회원 정보 수정
+                authMember.changeMemberInfo(memberUpdateInfoRequestDto, profileImageUploadInfo.get("mediaUrl"));
+            }else{
+                // 수정할 프로필 이미지 없을 시 회원 정보 수정
+                authMember.changeMemberInfo(memberUpdateInfoRequestDto, null);
+            }
             
             // 이전 비밀번호와 일치하는지 확인
-            if(passwordEncoder.matches(memberUpdateInfoRequestDto.getPassword(), authMember.getPassword())) {
-                log.info("이전 비밀번호와 동일합니다. 다시 입력해주십시오.");
-                LogUtil.logError("이전 비밀번호와 동일합니다. 다시 입력해주십시오.", memberUpdateInfoRequestDto.getPassword());
-                return new ResponseBody(StatusCode.CANT_UPDATE_PASSWORD, null);
-            }
-
-            // 회원 정보 수정
-            authMember.changeMemberInfo(memberUpdateInfoRequestDto, passwordEncoder.encode(memberUpdateInfoRequestDto.getPassword()));
+//            if(passwordEncoder.matches(memberUpdateInfoRequestDto.getPassword(), authMember.getPassword())) {
+//                log.info("이전 비밀번호와 동일합니다. 다시 입력해주십시오.");
+//                LogUtil.logError("이전 비밀번호와 동일합니다. 다시 입력해주십시오.", memberUpdateInfoRequestDto.getPassword());
+//                return new ResponseBody(StatusCode.CANT_UPDATE_PASSWORD, null);
+//            }
 
             return new ResponseBody(StatusCode.OK, "정상적으로 수정되었습니다.");
         }catch (Exception e){
@@ -347,6 +405,38 @@ public class MemberService extends AbstractExceptionHandler {
 
             return new ResponseBody(StatusCode.OK, preRegistrationCount);
         }catch (Exception e){
+            LogUtil.logException(e);
+            return null;
+        }
+    }
+
+
+    // 비밀번호 수정
+    public ResponseBody updateMemberPassword(HttpServletRequest request, UpdatePasswordRequestDto updatePasswordRequestDto){
+        log.info("비밀번호 수정 service");
+
+        try{
+            if (!jwtTokenProvider.validateToken(request.getHeader("Authorization").substring(7)) && !jwtTokenProvider.validateToken(request.getHeader("RefreshToken"))) {
+                log.info("옳바른 토큰 정보가 아니라 비밀번호를 수정할 수 없습니다.");
+                LogUtil.logError("옳바른 토큰 정보가 아니라 비밀번호를 수정할 수 없습니다.", request.getHeader("Authorization"));
+                return new ResponseBody(StatusCode.TOKEN_ISSUE, null);
+            }
+
+            // 입력한 비밀번호와 재확인용 비밀번호가 일치하지 않는지 확인
+            if(!updatePasswordRequestDto.getPassword().equals(updatePasswordRequestDto.getCheckPassword())){
+                log.info("입력한 비밀번호와 재확인용 비밀번호가 일치하지 않습니다.");
+                LogUtil.logError("입력한 비밀번호와 재확인용 비밀번호가 일치하지 않습니다.", updatePasswordRequestDto.getPassword(), updatePasswordRequestDto.getCheckPassword());
+                return new ResponseBody(StatusCode.DIDNT_MATCH_PASSWORD_AND_CHECKPASSWORD, null);
+            }
+
+            // 로그인한 회원 객체 조회
+            Member authMember = jwtTokenProvider.getMemberFromAuthentication();
+
+            // 비밀번호 수정
+            authMember.changeMemberPassword(passwordEncoder.encode(updatePasswordRequestDto.getPassword()));
+
+            return new ResponseBody(StatusCode.OK, "정상적으로 수정되었습니다.");
+        }catch(Exception e){
             LogUtil.logException(e);
             return null;
         }

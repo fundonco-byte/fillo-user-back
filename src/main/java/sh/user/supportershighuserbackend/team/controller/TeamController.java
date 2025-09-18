@@ -26,7 +26,7 @@ public class TeamController {
     @TimeMonitor
     @GetMapping (value = "/all", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.ALL_VALUE})
     public ResponseEntity<ResponseBody> getAllTeam(
-            HttpServletRequest request, @RequestParam Long leagueId){
+            HttpServletRequest request, @RequestParam("leagueId") Long leagueId){
         log.info("[Team] 회원가입 시 선택할 수 있도록 선택한 리그에 해당하는 전체 팀 정보 호출");
 
         try{
