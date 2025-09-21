@@ -260,6 +260,7 @@ public class MemberService extends AbstractExceptionHandler {
                     MemberLoginResponseDto.builder()
                             .email(loginMember.get().getEmail())
                             .name(loginMember.get().getName())
+                            .profileImage(loginMember.get().getProfileImage())
                             .accessToken(activeHost.equals("LOCAL") ? "Bearer " + jwtTokenDto.getAccessToken() : "토큰 비공개")
                             .refreshToken(activeHost.equals("LOCAL") ? jwtTokenDto.getRefreshToken() : "토큰 비공개")
                             .build()
@@ -375,9 +376,11 @@ public class MemberService extends AbstractExceptionHandler {
                 HashMap<String, String> profileImageUploadInfo = mediaUpload.uploadMemberMedia(profileImage);
                 // 회원 정보 수정
                 authMember.changeMemberInfo(memberUpdateInfoRequestDto, profileImageUploadInfo.get("mediaUrl"));
+                return new ResponseBody(StatusCode.OK, profileImageUploadInfo.get("mediaUrl"));
             }else{
                 // 수정할 프로필 이미지 없을 시 회원 정보 수정
                 authMember.changeMemberInfo(memberUpdateInfoRequestDto, null);
+                return new ResponseBody(StatusCode.OK, null);
             }
             
             // 이전 비밀번호와 일치하는지 확인
@@ -386,8 +389,6 @@ public class MemberService extends AbstractExceptionHandler {
 //                LogUtil.logError("이전 비밀번호와 동일합니다. 다시 입력해주십시오.", memberUpdateInfoRequestDto.getPassword());
 //                return new ResponseBody(StatusCode.CANT_UPDATE_PASSWORD, null);
 //            }
-
-            return new ResponseBody(StatusCode.OK, "정상적으로 수정되었습니다.");
         }catch (Exception e){
             LogUtil.logException(e, request);
             return null;
