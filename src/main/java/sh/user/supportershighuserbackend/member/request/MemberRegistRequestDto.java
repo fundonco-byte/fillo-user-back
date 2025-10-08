@@ -44,6 +44,8 @@ public class MemberRegistRequestDto extends AbstractVO {
 //    private String introduceSelf; // 간단 자기 소개
     private Long leagueId; // 선호 리그 id
     private Long teamId; // 선호 팀 id
+    private Long leagueId2;
+    private Long teamId2;
     @NotBlank
     private String personalInfoAgreement; // 개인정보 이용 동의
     @NotBlank

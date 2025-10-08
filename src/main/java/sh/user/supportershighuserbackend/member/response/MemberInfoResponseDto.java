@@ -22,6 +22,10 @@ public class MemberInfoResponseDto{
     private String leagueName; // 선호 리그 명
     private Long teamId; // 선호 팀 ID
     private String teamName; // 선호 팀 명
+    private Long leagueId2; // 선호 리그 ID
+    private String league2Name; // 선호 리그 명
+    private Long teamId2; // 선호 팀 ID
+    private String team2Name; // 선호 팀 명
     private String personalInfoAgreement; // 개인정보 이용 동의
     private String marketingAgreement; // 마케팅 동의
     private String joinDate; // 가입일

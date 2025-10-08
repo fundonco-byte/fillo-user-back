@@ -153,16 +153,15 @@ public class MemberController {
     // 비밀번호 수정
     @MethodCallMonitor
     @TimeMonitor
-    @PutMapping(value = "/update/password", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.ALL_VALUE})
+    @PutMapping(value = "/update/password", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ResponseBody> updateMemberPassword(
-            HttpServletRequest request,
             @Valid @RequestBody UpdatePasswordRequestDto updatePasswordRequestDto){
         log.info("[Member] 비밀번호 수정");
 
         try{
-            return new ResponseEntity<>(memberService.updateMemberPassword(request, updatePasswordRequestDto), HttpStatus.OK);
+            return new ResponseEntity<>(memberService.updateMemberPassword(updatePasswordRequestDto), HttpStatus.OK);
         }catch(Exception e){
-            LogUtil.logException(e, request, updatePasswordRequestDto);
+            LogUtil.logException(e, updatePasswordRequestDto);
             return null;
         }
     }

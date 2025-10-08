@@ -52,6 +52,7 @@ public class SecurityConfig {
                                 "/api/v1/member/pre-registration",
                                 "/api/v1/league/all",
                                 "/api/v1/member/email/authorize",
+                                "/api/v1/member/update/password",
                                 "/actuator/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",

@@ -106,10 +106,26 @@ public class MemberService extends AbstractExceptionHandler {
                 // 선호하는 팀 정보 호출
                 Team selectTeam = teamRepository.getTeamByTeamId(memberRegistRequestDto.getTeamId());
 
+                Long selectLeague2Id = 0L;
+                String selectLeague2Name = "";
+                Long selectTeam2Id = 0L;
+                String selectTeam2Name = "";
+
+                if(memberRegistRequestDto.getLeagueId2() != 0 && memberRegistRequestDto.getLeagueId2() != null){
+                    League selectLeague2 = leagueRepository.getLeagueByLeagueId(memberRegistRequestDto.getLeagueId2());
+                    selectLeague2Id = selectLeague2.getLeagueId();
+                    selectLeague2Name = selectLeague2.getName();
+
+                    Team selectTeam2 = teamRepository.getTeamByTeamId(memberRegistRequestDto.getTeamId2());
+                    selectTeam2Id = selectTeam2.getTeamId();
+                    selectTeam2Name = selectTeam2.getName();
+                }
+
                 // 회원가입 정보 저장
                 Member member = Member.builder()
                         .email(memberRegistRequestDto.getEmail())
                         .name(memberRegistRequestDto.getName())
+                        .nickName(memberRegistRequestDto.getName())
                         .password(passwordEncoder.encode(memberRegistRequestDto.getPassword()))
                         .accountType("default")
                         .gender(memberRegistRequestDto.getGender())
@@ -118,6 +134,10 @@ public class MemberService extends AbstractExceptionHandler {
                         .leagueName(selectLeague.getName())
                         .teamId(selectTeam.getTeamId())
                         .teamName(selectTeam.getName())
+                        .leagueId2(selectLeague2Id)
+                        .league2Name(selectLeague2Name)
+                        .teamId2(selectTeam2Id)
+                        .team2Name(selectTeam2Name)
                         .live("y")
                         .personalInfoAgreement(memberRegistRequestDto.getPersonalInfoAgreement())
                         .marketingAgreement(memberRegistRequestDto.getMarketingAgreement())
@@ -144,6 +164,10 @@ public class MemberService extends AbstractExceptionHandler {
                                 .leagueName(registMember.getLeagueName())
                                 .teamId(registMember.getTeamId())
                                 .teamName(registMember.getTeamName())
+                                .leagueId2(registMember.getLeagueId2())
+                                .league2Name(registMember.getLeague2Name())
+                                .teamId2(registMember.getTeamId2())
+                                .team2name(registMember.getTeam2Name())
                                 .personalInfoAgreement(registMember.getPersonalInfoAgreement())
                                 .marketingAgreement(registMember.getMarketingAgreement())
                                 .build());
@@ -152,6 +176,7 @@ public class MemberService extends AbstractExceptionHandler {
                 Member member = Member.builder()
                         .email(memberRegistRequestDto.getEmail())
                         .name(memberRegistRequestDto.getName())
+                        .nickName(memberRegistRequestDto.getName())
                         .password(passwordEncoder.encode(memberRegistRequestDto.getPassword()))
                         .accountType("default")
                         .gender(memberRegistRequestDto.getGender())
@@ -160,6 +185,10 @@ public class MemberService extends AbstractExceptionHandler {
                         .leagueName("없음")
                         .teamId(0L)
                         .teamName("없음")
+                        .teamId2(0L)
+                        .team2Name("없음")
+                        .leagueId2(0L)
+                        .league2Name("없음")
                         .live("y")
                         .personalInfoAgreement(memberRegistRequestDto.getPersonalInfoAgreement())
                         .marketingAgreement(memberRegistRequestDto.getMarketingAgreement())
@@ -186,6 +215,10 @@ public class MemberService extends AbstractExceptionHandler {
                                 .leagueName(registMember.getLeagueName())
                                 .teamId(registMember.getTeamId())
                                 .teamName(registMember.getTeamName())
+                                .leagueId2(registMember.getLeagueId2())
+                                .league2Name(registMember.getLeague2Name())
+                                .teamId2(registMember.getTeamId2())
+                                .team2name(registMember.getTeam2Name())
                                 .personalInfoAgreement(registMember.getPersonalInfoAgreement())
                                 .marketingAgreement(registMember.getMarketingAgreement())
                                 .build());
@@ -345,6 +378,10 @@ public class MemberService extends AbstractExceptionHandler {
                             .leagueName(authMember.getLeagueName())
                             .teamId(authMember.getTeamId())
                             .teamName(authMember.getTeamName())
+                            .leagueId2(authMember.getLeagueId2())
+                            .league2Name(authMember.getLeague2Name())
+                            .teamId2(authMember.getTeamId2())
+                            .team2Name(authMember.getTeam2Name())
                             .personalInfoAgreement(authMember.getPersonalInfoAgreement())
                             .marketingAgreement(authMember.getMarketingAgreement())
                             .joinDate(authMember.getCreatedAt().format(formatter))
@@ -371,6 +408,17 @@ public class MemberService extends AbstractExceptionHandler {
             // 로그인한 회원 객체 조회
             Member authMember = jwtTokenProvider.getMemberFromAuthentication();
 
+            // 이전 비밀번호와 일치하는지 확인
+            if(memberUpdateInfoRequestDto.getPasswordChangeCheck().equals("Y")) {
+                if(passwordEncoder.matches(memberUpdateInfoRequestDto.getPassword(), authMember.getPassword())){
+                    memberUpdateInfoRequestDto.setNewPassword(passwordEncoder.encode(memberUpdateInfoRequestDto.getNewPassword()));
+                }else {
+                    log.info("기존 비밀번호가 일치하지 않습니다.");
+                    LogUtil.logError("기존 비밀번호가 일치하지 않아 수정을 진행할 수 없습니다.", memberUpdateInfoRequestDto.getPassword());
+                    return new ResponseBody(StatusCode.CANT_UPDATE_PASSWORD, null);
+                }
+            }
+
             // 수정할 프로필 이미지 존재 시 수정
             if(profileImage != null || !profileImage.isEmpty()) {
                 HashMap<String, String> profileImageUploadInfo = mediaUpload.uploadMemberMedia(profileImage);
@@ -383,12 +431,7 @@ public class MemberService extends AbstractExceptionHandler {
                 return new ResponseBody(StatusCode.OK, null);
             }
             
-            // 이전 비밀번호와 일치하는지 확인
-//            if(passwordEncoder.matches(memberUpdateInfoRequestDto.getPassword(), authMember.getPassword())) {
-//                log.info("이전 비밀번호와 동일합니다. 다시 입력해주십시오.");
-//                LogUtil.logError("이전 비밀번호와 동일합니다. 다시 입력해주십시오.", memberUpdateInfoRequestDto.getPassword());
-//                return new ResponseBody(StatusCode.CANT_UPDATE_PASSWORD, null);
-//            }
+
         }catch (Exception e){
             LogUtil.logException(e, request);
             return null;
@@ -413,14 +456,17 @@ public class MemberService extends AbstractExceptionHandler {
 
 
     // 비밀번호 수정
-    public ResponseBody updateMemberPassword(HttpServletRequest request, UpdatePasswordRequestDto updatePasswordRequestDto){
+    @Transactional
+    public ResponseBody updateMemberPassword( UpdatePasswordRequestDto updatePasswordRequestDto){
         log.info("비밀번호 수정 service");
 
         try{
-            if (!jwtTokenProvider.validateToken(request.getHeader("Authorization").substring(7)) && !jwtTokenProvider.validateToken(request.getHeader("RefreshToken"))) {
-                log.info("옳바른 토큰 정보가 아니라 비밀번호를 수정할 수 없습니다.");
-                LogUtil.logError("옳바른 토큰 정보가 아니라 비밀번호를 수정할 수 없습니다.", request.getHeader("Authorization"));
-                return new ResponseBody(StatusCode.TOKEN_ISSUE, null);
+            Optional<Member> member = memberRepository.getMemberByEmail(updatePasswordRequestDto.getEmail());
+
+            if(member.isEmpty()){
+                log.info("해당되는 이메일 계정이 존재하지 않습니다.");
+                LogUtil.logError("해당되는 이메일 계정이 존재하지 않습니다.", updatePasswordRequestDto.getEmail());
+                return new ResponseBody(StatusCode.NOT_EXIST_USER_ACCOUNT, null);
             }
 
             // 입력한 비밀번호와 재확인용 비밀번호가 일치하지 않는지 확인
@@ -430,11 +476,8 @@ public class MemberService extends AbstractExceptionHandler {
                 return new ResponseBody(StatusCode.DIDNT_MATCH_PASSWORD_AND_CHECKPASSWORD, null);
             }
 
-            // 로그인한 회원 객체 조회
-            Member authMember = jwtTokenProvider.getMemberFromAuthentication();
-
             // 비밀번호 수정
-            authMember.changeMemberPassword(passwordEncoder.encode(updatePasswordRequestDto.getPassword()));
+            member.get().changeMemberPassword(passwordEncoder.encode(updatePasswordRequestDto.getPassword()));
 
             return new ResponseBody(StatusCode.OK, "정상적으로 수정되었습니다.");
         }catch(Exception e){

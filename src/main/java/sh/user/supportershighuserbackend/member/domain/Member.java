@@ -114,6 +114,26 @@ public class Member extends TimeStamped {
     @Column(columnDefinition = "varchar(20) not null")
     private String teamName;
 
+    @Comment("선호 리그2 ID")
+    @Collate("utf8mb4_general_ci")
+    @Column(columnDefinition = "bigint default 0")
+    private Long leagueId2;
+
+    @Comment("선호 리그2 명")
+    @Collate("utf8mb4_general_ci")
+    @Column(columnDefinition = "varchar(15)")
+    private String league2Name;
+
+    @Comment("선호 팀2 ID")
+    @Collate("utf8mb4_general_ci")
+    @Column(columnDefinition = "bigint default 0")
+    private Long teamId2;
+
+    @Comment("선호 팀2 명")
+    @Collate("utf8mb4_general_ci")
+    @Column(columnDefinition = "varchar(20)")
+    private String team2Name;
+
     @Comment("개인정보 수집 동의")
     @Collate("utf8mb4_general_ci")
     @Column(columnDefinition = "char(1) not null")
@@ -126,17 +146,24 @@ public class Member extends TimeStamped {
 
     // 회원 정보 수정
     public void changeMemberInfo(MemberUpdateInfoRequestDto updateInfo, String profileImageUrl) {
-        this.nickName = updateInfo.getNickName();
+        this.name = updateInfo.getName();
+        this.nickName = updateInfo.getName();
+        if(updateInfo.getPasswordChangeCheck().equals("Y")){
+            this.password = updateInfo.getNewPassword();
+        }
 //        this.password = password;
-        this.address = updateInfo.getAddress();
+//        this.address = updateInfo.getAddress();
         this.birthDate = updateInfo.getBirthDate();
-//        this.postalCode = updateInfo.getPostalCode();
-        this.phone = updateInfo.getPhone();
+//        this.phone = updateInfo.getPhone();
         this.leagueId = updateInfo.getLeagueId();
         this.leagueName = updateInfo.getLeagueName();
         this.teamId = updateInfo.getTeamId();
         this.teamName = updateInfo.getTeamName();
-        this.personalInfoAgreement = updateInfo.getPersonalInfoAgreement();
+        this.leagueId2 = updateInfo.getLeagueId2();
+        this.league2Name = updateInfo.getLeague2Name();
+        this.teamId2 = updateInfo.getTeamId2();
+        this.team2Name = updateInfo.getTeam2Name();
+//        this.personalInfoAgreement = updateInfo.getPersonalInfoAgreement();
         this.marketingAgreement = updateInfo.getMarketingAgreement();
         this.profileImage = profileImageUrl;
     }
