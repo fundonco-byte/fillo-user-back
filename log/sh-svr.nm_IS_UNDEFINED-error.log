@@ -1,27 +1,16 @@
-03:28:21.880 ERROR [http-nio-8093-exec-9] 로그인 시도 시 해당 계정이 존재하지 않습니다.
-[VO] sh.user.supportershighuserbackend.member.request.MemberLoginRequestDto
-{
-  "email" : "wlstpgns51@naver.com",
-  "password" : "wls124578!"
-}
+19:10:34.842 ERROR [http-nio-8093-exec-9] 팀 정보들이 존재하지 않습니다.[]
 Caller+0	 at sh.user.supportershighuserbackend.common.util.LogUtil.logMsg(LogUtil.java:107)
 Caller+1	 at sh.user.supportershighuserbackend.common.util.LogUtil.logError(LogUtil.java:214)
-Caller+2	 at sh.user.supportershighuserbackend.member.service.MemberService.loginAccount(MemberService.java:256)
-03:28:26.565 ERROR [http-nio-8093-exec-10] 로그인 시도 시 해당 계정이 존재하지 않습니다.
-[VO] sh.user.supportershighuserbackend.member.request.MemberLoginRequestDto
-{
-  "email" : "wlstpgns51@naver.com",
-  "password" : "wls124578!"
-}
+Caller+2	 at sh.user.supportershighuserbackend.team.service.TeamService.getAllTeam(TeamService.java:32)
+19:30:39.165 ERROR [http-nio-8093-exec-10] 팀 정보들이 존재하지 않습니다.[]
 Caller+0	 at sh.user.supportershighuserbackend.common.util.LogUtil.logMsg(LogUtil.java:107)
 Caller+1	 at sh.user.supportershighuserbackend.common.util.LogUtil.logError(LogUtil.java:214)
-Caller+2	 at sh.user.supportershighuserbackend.member.service.MemberService.loginAccount(MemberService.java:256)
-03:30:40.530 ERROR [http-nio-8093-exec-7] 로그인 시도 시 해당 계정이 존재하지 않습니다.
-[VO] sh.user.supportershighuserbackend.member.request.MemberLoginRequestDto
-{
-  "email" : "wlstpgns51@naver.com",
-  "password" : "wls124578!"
-}
+Caller+2	 at sh.user.supportershighuserbackend.team.service.TeamService.getAllTeam(TeamService.java:32)
+20:20:06.801 ERROR [http-nio-8093-exec-4] 팀 정보들이 존재하지 않습니다.[]
 Caller+0	 at sh.user.supportershighuserbackend.common.util.LogUtil.logMsg(LogUtil.java:107)
 Caller+1	 at sh.user.supportershighuserbackend.common.util.LogUtil.logError(LogUtil.java:214)
-Caller+2	 at sh.user.supportershighuserbackend.member.service.MemberService.loginAccount(MemberService.java:256)
+Caller+2	 at sh.user.supportershighuserbackend.team.service.TeamService.getAllTeam(TeamService.java:32)
+20:20:06.961 ERROR [http-nio-8093-exec-6] 팀 정보들이 존재하지 않습니다.[]
+Caller+0	 at sh.user.supportershighuserbackend.common.util.LogUtil.logMsg(LogUtil.java:107)
+Caller+1	 at sh.user.supportershighuserbackend.common.util.LogUtil.logError(LogUtil.java:214)
+Caller+2	 at sh.user.supportershighuserbackend.team.service.TeamService.getAllTeam(TeamService.java:32)

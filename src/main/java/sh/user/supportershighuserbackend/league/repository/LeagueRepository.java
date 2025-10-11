@@ -10,7 +10,7 @@ import java.util.List;
 public interface LeagueRepository extends JpaRepository<League, Long> {
 
     // 회원가입 시 선택할 수 있도록 전체 리그 정보 호출
-    List<League> findAllBy();
+    List<League> findAllByOrderByLeagueIdAsc();
 
     // 회원가입 시 유저가 선택한 리그 정보 호출
     League getLeagueByLeagueId(Long leagueId);

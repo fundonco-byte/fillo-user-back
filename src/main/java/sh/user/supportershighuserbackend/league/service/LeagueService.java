@@ -26,7 +26,7 @@ public class LeagueService {
         log.info("회원가입 전체 리그 정보 호출 service");
 
         // 전체 리그 정보 호출
-        List<League> allLeague = leagueRepository.findAllBy();
+        List<League> allLeague = leagueRepository.findAllByOrderByLeagueIdAsc();
 
         if (allLeague.isEmpty()) {
             LogUtil.logError(StatusCode.EMPTY_LEAGUE_INFO.getMessage(), allLeague);
