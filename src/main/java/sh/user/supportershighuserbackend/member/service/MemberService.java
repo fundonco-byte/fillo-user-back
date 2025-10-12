@@ -420,7 +420,7 @@ public class MemberService extends AbstractExceptionHandler {
             }
 
             // 수정할 프로필 이미지 존재 시 수정
-            if(profileImage != null || !profileImage.isEmpty()) {
+            if(profileImage != null) {
                 HashMap<String, String> profileImageUploadInfo = mediaUpload.uploadMemberMedia(profileImage);
                 // 회원 정보 수정
                 authMember.changeMemberInfo(memberUpdateInfoRequestDto, profileImageUploadInfo.get("mediaUrl"));
